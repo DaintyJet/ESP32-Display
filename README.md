@@ -11,7 +11,7 @@ An Arduino project consists of at least two functions. The **setup** and **loop*
 ## Attempt to make into ESP project
 Componets used:
 https://github.com/adafruit/Adafruit-ST7735-Library
-https://github.com/adafruit/Adafruit-ST7735-Library/tree/master
+
 https://github.com/adafruit/Adafruit-GFX-Library
 
 Need IC2 - inti it
