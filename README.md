@@ -8,12 +8,4 @@ Something to note is that the ESP-IDF arduino library, at the time of writing (6
 
 An Arduino project consists of at least two functions. The **setup** and **loop** functions. The entrypoint of the program is the **setup** functions, this is often used to configure the device and any attached components. Once the **setup** function has returned, the **loop** function will run, and will continue to be called each time it completes. This architecture is called the **super-loop**, and does not take advantage of the Real Time Operating System (RTOS) capabilities of the ESP32.
 
-## Attempt to make into ESP project
-Componets used:
-https://github.com/adafruit/Adafruit-ST7735-Library
 
-https://github.com/adafruit/Adafruit-GFX-Library
-
-Need IC2 - inti it
-Need AHT - sensor, pull from mitm project
-Need WIFI - need nvm
