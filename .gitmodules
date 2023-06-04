@@ -1,6 +1,0 @@
-[submodule "components/Adafruit-ST7735-Library"]
-	path = components/Adafruit-ST7735-Library
-	url = https://github.com/adafruit/Adafruit-ST7735-Library
-[submodule "components/Adafruit-GFX-Library"]
-	path = components/Adafruit-GFX-Library
-	url = https://github.com/adafruit/Adafruit-GFX-Library
