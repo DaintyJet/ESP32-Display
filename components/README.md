@@ -1,4 +1,4 @@
-Possibly add a CMakefile to the ST77xx folder 
+Possibly add a CMakefile to the ST77xx  
 ```
 cmake_minimum_required(VERSION 3.5)
 
