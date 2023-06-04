@@ -14,6 +14,7 @@
 // NTP Libs 
 #include "esp_sntp.h"
 //Display Libs
+// Not possible to use the ST7735.h lib.. atm, hence this will be added to a branch
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_ST7735.h> // Hardware-specific library for ST7735
 #include <Adafruit_ST7789.h> // Hardware-specific library for ST7789
