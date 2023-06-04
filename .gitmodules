@@ -7,3 +7,6 @@
 [submodule "Adafruit_BusIO"]
 	path = components/Adafruit_BusIO
 	url = https://github.com/adafruit/Adafruit_BusIO.git
+[submodule "components/arduino-esp32"]
+	path = components/arduino
+	url = https://github.com/espressif/arduino-esp32.git

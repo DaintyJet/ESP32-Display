@@ -26,6 +26,7 @@ We will need to use the ESP-IDF version 4.4 if we want to use it to build and fl
     # Example 
     export IDF_PATH=/home/iot/esp-4.4/esp-idf
     ```
+6. Run the idf.py build command - this should link 
 
 
 ## Components 
