@@ -1,3 +1,12 @@
 [submodule "components/arduino"]
 	path = components/arduino
 	url = https://github.com/espressif/arduino-esp32
+[submodule "BusIO"]
+	path = components/Adafruit_BusIO
+	url = https://github.com/adafruit/Adafruit_BusIO
+[submodule "GFX"]
+	path = components/Adafruit-GFX-Library
+	url = https://github.com/adafruit/Adafruit-GFX-Library
+[submodule "DST7735"]
+	path = components/Adafruit-ST7735-Library
+	url = https://github.com/DaintyJet/Adafruit-ST7735-Library
