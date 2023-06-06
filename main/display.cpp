@@ -223,13 +223,13 @@ void loop() {
             tft.setCursor(5, 70);
             tft.setTextColor(ST77XX_MAGENTA);
             tft.setTextSize(1);
-            tft.println("cooldown:");
+            tft.println("Cooldown:");
            
             tft.setCursor(65, 70);
             tft.setTextColor(ST77XX_YELLOW);
             tft.setTextSize(1);
             tft.println(99-j);
-            vTaskDelay(pdMS_TO_TICKS(200));
+            vTaskDelay(pdMS_TO_TICKS(100));
         }
         ESP_ERROR_CHECK(gpio_set_level(LED, HIGH));
     }
