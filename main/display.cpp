@@ -9,8 +9,6 @@
 #include "esp_system.h"
 #include "nvs_flash.h"
 #include "nvs.h"
-// NTP Libs
-#include "esp_sntp.h"
 //Display Libs
 // Not possible to use the ST7735.h lib.. atm, hence this will be added to a branch
 #include <Adafruit_GFX.h>    // Core graphics library
@@ -58,7 +56,7 @@ const float p = 3.1415926;
 #define EXAMPLE_ESP_WIFI_PASS CONFIG_ESP_WIFI_PASSWORD
 // End WIFI
 
-// NTP constants 
+// NTP constants
 const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = -5 *3600;//for timezone
 const int   daylightOffset_sec = 3600;
@@ -76,7 +74,7 @@ void Zeit(void);
 aht_t aht_dev;
 
 void setup(void) {  
-    
+   
     int i = 0;
     ESP_LOGI(TAG,"Hello! ST77xx TFT Test");
    
@@ -98,12 +96,12 @@ void setup(void) {
     // Config i2c
     ESP_ERROR_CHECK(i2cdev_init());
     vTaskDelay(pdMS_TO_TICKS(100));
-    
+   
     // Init ST7735S mini display, using a 0.96" 160x80 TFT:
     tft.initR(INITR_MINI160x80);  
     vTaskDelay(pdMS_TO_TICKS(100));
-    
-    // Init AHT device 
+   
+    // Init AHT device
     init_ast_dev();
 
     // Print the logo
@@ -118,14 +116,14 @@ void setup(void) {
         vTaskDelay(100);
     }
 
-    // Print welcome message 
+    // Print welcome message
     welcome();
     vTaskDelay(pdMS_TO_TICKS(1000));
-    
+   
     // Print HUD
     HUD();
     vTaskDelay(pdMS_TO_TICKS(500));
-    
+   
     tft.setCursor(screenWidth-3*screenWidth/4+20, HUD_height-8);
     tft.setTextColor(ST77XX_YELLOW);
     tft.print("Connecting");
@@ -137,8 +135,8 @@ void setup(void) {
     }
    
     // Connect to Wifi and print bars
-    wifi_init_sta();
-    Wifibars();
+    WiFi.begin("HOME-9E24_Ext", "triumph98");
+vTaskDelay(500);
     vTaskDelay(pdMS_TO_TICKS(500));
     tft.fillRect(screenWidth/2-20, HUD_height - 10, 70,10, ST77XX_BLACK);
 }
@@ -152,14 +150,15 @@ void loop() {
     while (1) {
         gpio_set_level(LED, LOW);
 
-        // Fill Screen 
-        tft.fillRect(83, startY, 100, 32, ST77XX_BLACK);
-        tft.fillRect(80, startY+25, 80, 15, ST77XX_BLACK);
+        // Fill Screen of areas with updating text (startY - 3) is for the circle
+        tft.fillRect(80, startY - 3 , 80, (80 - (startY - 3)), ST77XX_BLACK);
        
-        // Print time 
+        // Print Bars
+        Wifibars();
+        // Print time
         Zeit();
 
-        // Read temp and humidity 
+        // Read temp and humidity
         aht_read(&temp, &humidity);
 
         // Print Temp in C
@@ -179,7 +178,7 @@ void loop() {
         tft.setTextColor(ST77XX_GREEN);
         tft.setTextSize(1);
         tft.println("C");
-        
+       
         // Print Temp in F
         tft.setCursor(startX, startY+textH);
         tft.setTextColor(ST77XX_GREEN);
@@ -217,9 +216,9 @@ void loop() {
 
         vTaskDelay(pdMS_TO_TICKS(1000)); // wait between measurments
 
-        // Print Cooldowun timer and update 
+        // Print Cooldowun timer and update
         for(j = 0; j < 100; j++){
-            tft.fillRect(60, 65, 90, 75, ST77XX_BLACK);
+            tft.fillRect(60, 65, 30, 40, ST77XX_BLACK);
            
             tft.setCursor(5, 70);
             tft.setTextColor(ST77XX_MAGENTA);
@@ -329,9 +328,9 @@ void HUD() {
 void Wifibars(){
    long rssi =-1* WiFi.RSSI();
    int barWidth = 4 ;
-   int x = screenWidth - barWidth*6;
+   int x = screenWidth - barWidth*4;
    int y = abs(HUD_height-5);
-
+   
    tft.setCursor(x-35,y+55);
    tft.setTextColor(ST77XX_RED);
    tft.print("RSSI:");
@@ -367,9 +366,7 @@ void Wifibars(){
        tft.fillRect(x+2*barWidth, y, 3, -8, ST77XX_RED);
        tft.fillRect(x+3*barWidth, y, 3, -10, ST77XX_RED);
    }
-   else;
-  // tft.setCursor(20,20);
-  // tft.print(rssi);
+   else{};
 }
 //********************************************************
 // Function: Utilize ESP32 AHT Library to load values into
