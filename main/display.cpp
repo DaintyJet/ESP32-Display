@@ -147,6 +147,18 @@ void loop() {
     int startY = HUD_height+8;
     int startX = 8;
     int textH = 12;
+
+    // Print Labels
+    for (int i = 0; i < 1; ++i) {
+        tft.setCursor(startX, startY) + (textH * i);
+        tft.setTextColor(ST77XX_GREEN);
+        tft.setTextSize(1);
+        tft.println("Temperature: ");
+        tft.setCursor(90, startY + (textH * i));
+        tft.setTextColor(ST77XX_GREEN);
+        tft.setTextSize(1);
+    }
+
     while (1) {
         gpio_set_level(LED, LOW);
 
@@ -161,15 +173,8 @@ void loop() {
         // Read temp and humidity
         aht_read(&temp, &humidity);
 
+
         // Print Temp in C
-        tft.setCursor(startX, startY);
-        tft.setTextColor(ST77XX_GREEN);
-        tft.setTextSize(1);
-        tft.println("Temperature: ");
-        tft.setCursor(90, startY);
-        tft.setTextColor(ST77XX_GREEN);
-        tft.setTextSize(1);
-       
         tft.println(temp);
         Serial.println(temp);  
         tft.drawCircle(125,startY-1,2,ST77XX_GREEN);
@@ -179,14 +184,6 @@ void loop() {
         tft.setTextSize(1);
         tft.println("C");
        
-        // Print Temp in F
-        tft.setCursor(startX, startY+textH);
-        tft.setTextColor(ST77XX_GREEN);
-        tft.setTextSize(1);
-        tft.println("Temperature: ");
-        tft.setCursor(90, startY+textH);
-        tft.setTextColor(ST77XX_GREEN);
-        tft.setTextSize(1);
         // Print temp in F ... we need to convert!        
         tft.println((temp * (9.0/5)) + 32.0);
 
@@ -198,25 +195,25 @@ void loop() {
         tft.println("F");
 
         // Print Humidity
-        tft.setCursor(startX, startY+(2*textH));
+        tft.setCursor(startX, startY+(2 * textH));
         tft.setTextColor(ST77XX_GREEN);
         tft.setTextSize(1);
         tft.println("Humidity: ");
    
         //tft.drawRect(x, y, width, height, color);
-        tft.setCursor(80, startY+(2*textH));
+        tft.setCursor(80, startY + (2 * textH));
         tft.setTextColor(ST77XX_GREEN);
         tft.setTextSize(1);
         tft.println(humidity);
         Serial.println(humidity);
-        tft.setCursor(115, startY+(2*textH));
+        tft.setCursor(115, startY + (2 * textH));
         tft.setTextColor(ST77XX_GREEN);
         tft.setTextSize(1);
         tft.println("%");
 
-        vTaskDelay(pdMS_TO_TICKS(1000)); // wait between measurments
+        vTaskDelay(pdMS_TO_TICKS(1000)); // wait between measurements
 
-        // Print Cooldowun timer and update
+        // Print Cooldown timer and update
         for(j = 0; j < 100; j++){
             tft.fillRect(60, 65, 30, 40, ST77XX_BLACK);
            
@@ -326,47 +323,22 @@ void HUD() {
 // Return Values: none
 //********************************************************
 void Wifibars(){
-   long rssi =-1* WiFi.RSSI();
-   int barWidth = 4 ;
-   int x = screenWidth - barWidth*4;
-   int y = abs(HUD_height-5);
-   
-   tft.setCursor(x-35,y+55);
-   tft.setTextColor(ST77XX_RED);
-   tft.print("RSSI:");
-   tft.setCursor(x-5,y+55);
-   tft.print(rssi);
-   if(rssi <= 55){
-       tft.fillRect(x, y, 3, -4,  ST77XX_WHITE);
-       tft.fillRect(x+barWidth, y, 3, -6, ST77XX_WHITE);
-       tft.fillRect(x+2*barWidth, y, 3, -8, ST77XX_WHITE);
-       tft.fillRect(x+3*barWidth, y, 3, -10, ST77XX_WHITE);
-   }
-   else if(rssi <= 100){
-       tft.fillRect(x, y, 3, -4,  ST77XX_RED);
-       tft.fillRect(x+barWidth, y, 3, -6, ST77XX_WHITE);
-       tft.fillRect(x+2*barWidth, y, 3, -8, ST77XX_WHITE);
-       tft.fillRect(x+3*barWidth, y, 3, -10, ST77XX_WHITE);
-   }
-   else if(rssi <= 175){
-        tft.fillRect(x, y, 3, -4,  ST77XX_RED);
-       tft.fillRect(x+barWidth, y, 3, -6, ST77XX_RED);
-       tft.fillRect(x+2*barWidth, y, 3, -8, ST77XX_WHITE);
-       tft.fillRect(x+3*barWidth, y, 3, -10, ST77XX_WHITE);
-   }
-   else if(rssi <= 255){
-        tft.fillRect(x, y, 3, -4,  ST77XX_RED);
-       tft.fillRect(x+barWidth, y, 3, -6, ST77XX_RED);
-       tft.fillRect(x+2*barWidth, y, 3, -8, ST77XX_RED);
-       tft.fillRect(x+3*barWidth, y, 3, -10, ST77XX_WHITE);
-   }
-   else if(rssi < 55){
-       tft.fillRect(x, y, 3, -4,  ST77XX_RED);
-       tft.fillRect(x+barWidth, y, 3, -6, ST77XX_RED);
-       tft.fillRect(x+2*barWidth, y, 3, -8, ST77XX_RED);
-       tft.fillRect(x+3*barWidth, y, 3, -10, ST77XX_RED);
-   }
-   else{};
+    long rssi =-1* WiFi.RSSI();
+    int barWidth = 4 ;
+    int x = screenWidth - barWidth*4;
+    int y = abs(HUD_height-5);
+    
+    tft.setCursor(x-35,y+55);
+    tft.setTextColor(ST77XX_RED);
+    tft.print("RSSI:");
+    tft.setCursor(x-5,y+55);
+    tft.print(rssi);
+    
+    // Fill Bars (Values are based on various online sources)
+    tft.fillRect(x, y, 3, -4, (rssi <= 88) ? ST77XX_RED  : ST77XX_WHITE);
+    tft.fillRect(x+barWidth, y, 3, -6, (rssi <= 77) ? ST77XX_RED  : ST77XX_WHITE);
+    tft.fillRect(x+2*barWidth, y, 3, -8, (rssi <= 66) ? ST77XX_RED  : ST77XX_WHITE);
+    tft.fillRect(x+3*barWidth, y, 3, -10, (rssi <= 55) ? ST77XX_RED  : ST77XX_WHITE ); 
 }
 //********************************************************
 // Function: Utilize ESP32 AHT Library to load values into
@@ -430,9 +402,9 @@ void init_ast_dev() {
         ESP_LOGI(TAG, "AHT10 not connected or fail to load calibration coefficient"); //(F()) save string to flash & keeps dynamic memory free
         vTaskDelay(pdMS_TO_TICKS(5000));
     }
+    vTaskDelay(pdMS_TO_TICKS(2000));
 
     // clear screen
-    vTaskDelay(pdMS_TO_TICKS(200));
     tft.fillScreen(ST77XX_BLACK);
     tft.invertDisplay(true);
     tft.setTextColor(ST77XX_GREEN);
@@ -441,12 +413,13 @@ void init_ast_dev() {
     bool calibrated;
     ESP_ERROR_CHECK(aht_get_status(&aht_dev, NULL, &calibrated));
     if(calibrated) {
-        tft.println("Sesor calibrated");
+        tft.println("Senor calibrated");
         ESP_LOGI(TAG, "Sensor calibrated");
     }
     else {
-        tft.println("Sesor not calibrated");
+        tft.println("Senor not calibrated");
         ESP_LOGI(TAG, "Sensor not calibrated");
     }
+    vTaskDelay(pdMS_TO_TICKS(2000));
     return;
 }
