@@ -327,56 +327,50 @@ void HUD() {
 // Return Values: none
 //********************************************************
 void Wifibars(){
-    // Wifi is already connected
+   long rssi =-1* WiFi.RSSI();
+   int barWidth = 4 ;
+   int x = screenWidth - barWidth*6;
+   int y = abs(HUD_height-5);
 
-    // Get the RSSI
-    wifi_ap_record_t ap;
-    esp_wifi_sta_get_ap_info(&ap);
-    printf("%d\n", ap.rssi);
-
-    long rssi = -1 * ap.rssi;
-    int barWidth = 4 ;
-    int x = screenWidth - barWidth*6;
-    int y = abs(HUD_height-5);
-
-    tft.setCursor(x-35,y+55);
-    tft.setTextColor(ST77XX_RED);
-    tft.print("RSSI:");
-    tft.setCursor(x-5,y+55);
-    tft.print(rssi);
-    if(rssi <= 55){
-        tft.fillRect(x, y, 3, -4,  ST77XX_WHITE);
-        tft.fillRect(x+barWidth, y, 3, -6, ST77XX_WHITE);
-        tft.fillRect(x+2*barWidth, y, 3, -8, ST77XX_WHITE);
-        tft.fillRect(x+3*barWidth, y, 3, -10, ST77XX_WHITE);
-    }
-    else if(rssi <= 100){
+   tft.setCursor(x-35,y+55);
+   tft.setTextColor(ST77XX_RED);
+   tft.print("RSSI:");
+   tft.setCursor(x-5,y+55);
+   tft.print(rssi);
+   if(rssi <= 55){
+       tft.fillRect(x, y, 3, -4,  ST77XX_WHITE);
+       tft.fillRect(x+barWidth, y, 3, -6, ST77XX_WHITE);
+       tft.fillRect(x+2*barWidth, y, 3, -8, ST77XX_WHITE);
+       tft.fillRect(x+3*barWidth, y, 3, -10, ST77XX_WHITE);
+   }
+   else if(rssi <= 100){
+       tft.fillRect(x, y, 3, -4,  ST77XX_RED);
+       tft.fillRect(x+barWidth, y, 3, -6, ST77XX_WHITE);
+       tft.fillRect(x+2*barWidth, y, 3, -8, ST77XX_WHITE);
+       tft.fillRect(x+3*barWidth, y, 3, -10, ST77XX_WHITE);
+   }
+   else if(rssi <= 175){
         tft.fillRect(x, y, 3, -4,  ST77XX_RED);
-        tft.fillRect(x+barWidth, y, 3, -6, ST77XX_WHITE);
-        tft.fillRect(x+2*barWidth, y, 3, -8, ST77XX_WHITE);
-        tft.fillRect(x+3*barWidth, y, 3, -10, ST77XX_WHITE);
-    }
-    else if(rssi <= 175){
+       tft.fillRect(x+barWidth, y, 3, -6, ST77XX_RED);
+       tft.fillRect(x+2*barWidth, y, 3, -8, ST77XX_WHITE);
+       tft.fillRect(x+3*barWidth, y, 3, -10, ST77XX_WHITE);
+   }
+   else if(rssi <= 255){
         tft.fillRect(x, y, 3, -4,  ST77XX_RED);
-        tft.fillRect(x+barWidth, y, 3, -6, ST77XX_RED);
-        tft.fillRect(x+2*barWidth, y, 3, -8, ST77XX_WHITE);
-        tft.fillRect(x+3*barWidth, y, 3, -10, ST77XX_WHITE);
-    }
-    else if(rssi <= 255){
-        tft.fillRect(x, y, 3, -4,  ST77XX_RED);
-        tft.fillRect(x+barWidth, y, 3, -6, ST77XX_RED);
-        tft.fillRect(x+2*barWidth, y, 3, -8, ST77XX_RED);
-        tft.fillRect(x+3*barWidth, y, 3, -10, ST77XX_WHITE);
-    }
-    else if(rssi < 55){
-        tft.fillRect(x, y, 3, -4,  ST77XX_RED);
-        tft.fillRect(x+barWidth, y, 3, -6, ST77XX_RED);
-        tft.fillRect(x+2*barWidth, y, 3, -8, ST77XX_RED);
-        tft.fillRect(x+3*barWidth, y, 3, -10, ST77XX_RED);
-    }
-    else{};
+       tft.fillRect(x+barWidth, y, 3, -6, ST77XX_RED);
+       tft.fillRect(x+2*barWidth, y, 3, -8, ST77XX_RED);
+       tft.fillRect(x+3*barWidth, y, 3, -10, ST77XX_WHITE);
+   }
+   else if(rssi < 55){
+       tft.fillRect(x, y, 3, -4,  ST77XX_RED);
+       tft.fillRect(x+barWidth, y, 3, -6, ST77XX_RED);
+       tft.fillRect(x+2*barWidth, y, 3, -8, ST77XX_RED);
+       tft.fillRect(x+3*barWidth, y, 3, -10, ST77XX_RED);
+   }
+   else;
+  // tft.setCursor(20,20);
+  // tft.print(rssi);
 }
-
 //********************************************************
 // Function: Utilize ESP32 AHT Library to load values into
 // The pontes float arguments
