@@ -304,8 +304,6 @@ void Zeit(){
   tft.setCursor(68, 8);
   tft.setTextSize(1);
   tft.println(&timeinfo, "%H:%M");
-
-  
 }
 
 

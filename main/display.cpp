@@ -4,9 +4,7 @@
 // ESP Libs
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "freertos/event_groups.h"
-#include "esp_wifi.h"
-#include "esp_event.h"
+//#include "freertos/event_groups.h"
 #include "esp_log.h"
 #include "esp_system.h"
 #include "nvs_flash.h"
@@ -18,23 +16,13 @@
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_ST7735.h> // Hardware-specific library for ST7735
 #include <Adafruit_ST7789.h> // Hardware-specific library for ST7789
-//#include <SPI.h>
-//#include <Wire.h>
+// WiFi
+#include "WiFi.h"
 // AHT
 #include "aht.h"
 
 
 const char* TAG = "DisplayTest";
-
-
-/* ESP get RSSI
-
- wifi_ap_record_t ap;
-esp_wifi_sta_get_ap_info(&ap);
-printf("%d\n", ap.rssi);*/
-
-//#include <AHT10.h> // there is no <AHT10.h> in official Library, replaced with <Adafruit_AHT10.h>
-//#include <Adafruit_AHT10.h>
 
 // Screen Macros
 #define screenWidth 160
@@ -53,27 +41,11 @@ printf("%d\n", ap.rssi);*/
 #define SDA            GPIO_NUM_27
 #define SCL            GPIO_NUM_33
 
-//  reference for ESP32 SatC_EDU REV-3 board's physical pins connections to VSPI:
-// SDA  GPIO23 aka VSPI MOSI
-// SCLK GPIO18 aka SCK aka VSPI SCK
-// D/C  GPIO15 aka A0 (also I2C SDA)
-// RST  GPIO4 aka RESET (also I2C SCL)
-// CS   GPIO5  aka chip select
-// LED  3.3V
-// VCC  5V
-// GND - GND
- 
 // For ST7735-based display
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
 
 //Global variables
 const float p = 3.1415926;
-
-
-
-
-const char* ssid = "SSID";
-const char* password =  "password";
 
 // Wifi Defines
 // WIFI Defines
@@ -82,52 +54,16 @@ const char* password =  "password";
    If you'd rather not, just change the below entries to strings with
    the config you want - ie #define EXAMPLE_WIFI_SSID "mywifissid"
 */
-const unsigned char EXAMPLE_ESP_WIFI_SSID[32] = CONFIG_ESP_WIFI_SSID;
-const unsigned char EXAMPLE_ESP_WIFI_PASS[64] = CONFIG_ESP_WIFI_PASSWORD;
-#define EXAMPLE_ESP_MAXIMUM_RETRY  CONFIG_ESP_MAXIMUM_RETRY
+#define EXAMPLE_ESP_WIFI_SSID CONFIG_ESP_WIFI_SSID
+#define EXAMPLE_ESP_WIFI_PASS CONFIG_ESP_WIFI_PASSWORD
+// End WIFI
 
-#if CONFIG_ESP_WPA3_SAE_PWE_HUNT_AND_PECK
-#define ESP_WIFI_SAE_MODE WPA3_SAE_PWE_HUNT_AND_PECK
-#define EXAMPLE_H2E_IDENTIFIER ""
-#elif CONFIG_ESP_WPA3_SAE_PWE_HASH_TO_ELEMENT
-#define ESP_WIFI_SAE_MODE WPA3_SAE_PWE_HASH_TO_ELEMENT
-#define EXAMPLE_H2E_IDENTIFIER CONFIG_ESP_WIFI_PW_ID
-#elif CONFIG_ESP_WPA3_SAE_PWE_BOTH
-#define ESP_WIFI_SAE_MODE WPA3_SAE_PWE_BOTH
-#define EXAMPLE_H2E_IDENTIFIER CONFIG_ESP_WIFI_PW_ID
-#endif
-#if CONFIG_ESP_WIFI_AUTH_OPEN
-#define ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD WIFI_AUTH_OPEN
-#elif CONFIG_ESP_WIFI_AUTH_WEP
-#define ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD WIFI_AUTH_WEP
-#elif CONFIG_ESP_WIFI_AUTH_WPA_PSK
-#define ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD WIFI_AUTH_WPA_PSK
-#elif CONFIG_ESP_WIFI_AUTH_WPA2_PSK
-#define ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD WIFI_AUTH_WPA2_PSK
-#elif CONFIG_ESP_WIFI_AUTH_WPA_WPA2_PSK
-#define ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD WIFI_AUTH_WPA_WPA2_PSK
-#elif CONFIG_ESP_WIFI_AUTH_WPA3_PSK
-#define ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD WIFI_AUTH_WPA3_PSK
-#elif CONFIG_ESP_WIFI_AUTH_WPA2_WPA3_PSK
-#define ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD WIFI_AUTH_WPA2_WPA3_PSK
-#elif CONFIG_ESP_WIFI_AUTH_WAPI_PSK
-#define ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD WIFI_AUTH_WAPI_PSK
-#endif
-
-
-/* The event group allows multiple bits for each event, but we only care about two events:
- * - we are connected to the AP with an IP
- * - we failed to connect after the maximum amount of retries */
-#define WIFI_CONNECTED_BIT BIT0
-#define WIFI_FAIL_BIT      BIT1
-
-/* FreeRTOS event group to signal when we are connected*/
-static EventGroupHandle_t s_wifi_event_group;
-// END WIFI DEFINES
-
+// NTP constants 
+const char* ntpServer = "pool.ntp.org";
+const long  gmtOffset_sec = -5 *3600;//for timezone
+const int   daylightOffset_sec = 3600;
 
 // Forward Definitions
-void wifi_init_sta(void);
 int aht_read(float* temperature, float* humidity);
 void init_ast_dev(void);
 void Wifibars(void);
@@ -140,8 +76,8 @@ void Zeit(void);
 aht_t aht_dev;
 
 void setup(void) {  
+    
     int i = 0;
-
     ESP_LOGI(TAG,"Hello! ST77xx TFT Test");
    
     // Configure LED
@@ -161,14 +97,16 @@ void setup(void) {
 
     // Config i2c
     ESP_ERROR_CHECK(i2cdev_init());
-   
     vTaskDelay(pdMS_TO_TICKS(100));
+    
     // Init ST7735S mini display, using a 0.96" 160x80 TFT:
     tft.initR(INITR_MINI160x80);  
-
     vTaskDelay(pdMS_TO_TICKS(100));
+    
+    // Init AHT device 
     init_ast_dev();
 
+    // Print the logo
     logo(ST77XX_GREEN);
     vTaskDelay(pdMS_TO_TICKS(1500));
 
@@ -180,12 +118,14 @@ void setup(void) {
         vTaskDelay(100);
     }
 
+    // Print welcome message 
     welcome();
-    vTaskDelay(1000);
+    vTaskDelay(pdMS_TO_TICKS(1000));
+    
+    // Print HUD
     HUD();
-   
-   
     vTaskDelay(pdMS_TO_TICKS(500));
+    
     tft.setCursor(screenWidth-3*screenWidth/4+20, HUD_height-8);
     tft.setTextColor(ST77XX_YELLOW);
     tft.print("Connecting");
@@ -196,13 +136,11 @@ void setup(void) {
       vTaskDelay(pdMS_TO_TICKS(250));
     }
    
-    // Connect to Wifi
+    // Connect to Wifi and print bars
     wifi_init_sta();
     Wifibars();
-
     vTaskDelay(pdMS_TO_TICKS(500));
     tft.fillRect(screenWidth/2-20, HUD_height - 10, 70,10, ST77XX_BLACK);
-    //xTaskCreate(&loop, "Display Loop", 8192, NULL, 1, NULL);
 }
 
 void loop() {
@@ -214,11 +152,17 @@ void loop() {
     while (1) {
         gpio_set_level(LED, LOW);
 
+        // Fill Screen 
         tft.fillRect(83, startY, 100, 32, ST77XX_BLACK);
-   
         tft.fillRect(80, startY+25, 80, 15, ST77XX_BLACK);
        
+        // Print time 
+        Zeit();
+
+        // Read temp and humidity 
         aht_read(&temp, &humidity);
+
+        // Print Temp in C
         tft.setCursor(startX, startY);
         tft.setTextColor(ST77XX_GREEN);
         tft.setTextSize(1);
@@ -235,7 +179,8 @@ void loop() {
         tft.setTextColor(ST77XX_GREEN);
         tft.setTextSize(1);
         tft.println("C");
-
+        
+        // Print Temp in F
         tft.setCursor(startX, startY+textH);
         tft.setTextColor(ST77XX_GREEN);
         tft.setTextSize(1);
@@ -243,8 +188,8 @@ void loop() {
         tft.setCursor(90, startY+textH);
         tft.setTextColor(ST77XX_GREEN);
         tft.setTextSize(1);
-        //tft.println(tempF);
-        tft.println(temp);
+        // Print temp in F ... we need to convert!        
+        tft.println((temp * (9.0/5)) + 32.0);
 
         tft.drawCircle(125,startY+textH-1,2,ST77XX_GREEN);
         // tft.drawCircle(x, y, radius, color);
@@ -253,6 +198,7 @@ void loop() {
         tft.setTextSize(1);
         tft.println("F");
 
+        // Print Humidity
         tft.setCursor(startX, startY+(2*textH));
         tft.setTextColor(ST77XX_GREEN);
         tft.setTextSize(1);
@@ -262,7 +208,6 @@ void loop() {
         tft.setCursor(80, startY+(2*textH));
         tft.setTextColor(ST77XX_GREEN);
         tft.setTextSize(1);
-        //tft.println(myAHT10.readHumidity());
         tft.println(humidity);
         Serial.println(humidity);
         tft.setCursor(115, startY+(2*textH));
@@ -272,6 +217,7 @@ void loop() {
 
         vTaskDelay(pdMS_TO_TICKS(1000)); // wait between measurments
 
+        // Print Cooldowun timer and update 
         for(j = 0; j < 100; j++){
             tft.fillRect(60, 65, 90, 75, ST77XX_BLACK);
            
@@ -287,8 +233,6 @@ void loop() {
             vTaskDelay(pdMS_TO_TICKS(100));
         }
         ESP_ERROR_CHECK(gpio_set_level(LED, HIGH));
-        Zeit();
-
     }
 }
 
@@ -297,33 +241,19 @@ void loop() {
 // Arguments: none
 // Return Value: none
 //********************************************************
-void Zeit(){    
-    // Time vars
+void Zeit(){
+    configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
     struct tm timeinfo;
-    time_t now;
-    char strtime_buff[64];
-   
-    // Set timezone tp EST
-    setenv("TZ","EST5EDT,M3.2.0/2,M11.1.0",1);
-    tzset();
-
-    // Get time
-    localtime_r(&now, &timeinfo);
-
-    // Turn time value into str
-    strftime(strtime_buff, sizeof(strtime_buff), "%c", &timeinfo);
-
-    ESP_LOGI(TAG,"GOT TIME!");
+    if(!getLocalTime(&timeinfo)){
+        Serial.println("Failed to obtain time");
+        return;
+    }
+    Serial.println("GOT TIME!");
     tft.fillRect(screenWidth/2-10, HUD_height - 12, 38,12, ST77XX_BLACK);
     tft.setTextColor(ST77XX_GREEN);
     tft.setCursor(68, 8);
     tft.setTextSize(1);
-    // Generate Substring for time
-    strncpy(strtime_buff, strtime_buff + 11, 8);
-    strtime_buff[8] = '\0';
-    // Print Time
-    tft.println(strtime_buff);
-    ESP_LOGI(TAG,"%s", strtime_buff);
+    tft.println(&timeinfo, "%H:%M");
 }
 
 //********************************************************
@@ -446,113 +376,6 @@ void Wifibars(){
     }
     else{};
 }
-
-
-//********************************************************
-// Function: This is a function called on the completion of an event
-// This is used for the WIFI functions
-// Arguments: argument list, event, event_id and data (generic)
-// Return Value: None
-// Ref: https://github.com/espressif/esp-idf/tree/master/examples/wifi/getting_started/station
-//********************************************************
-static void wifi_event_handler(void* arg, esp_event_base_t event_base,
-                                int32_t event_id, void* event_data)
-{
-    static int s_retry_num = 0;
-    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
-        esp_wifi_connect();
-    } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
-        if (s_retry_num < EXAMPLE_ESP_MAXIMUM_RETRY) {
-            esp_wifi_connect();
-            s_retry_num++;
-            ESP_LOGI(TAG, "retry to connect to the AP");
-        } else {
-            xEventGroupSetBits(s_wifi_event_group, WIFI_FAIL_BIT);
-        }
-        ESP_LOGI(TAG,"connect to the AP fail");
-    } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
-        ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
-        ESP_LOGI(TAG, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
-        s_retry_num = 0;
-        xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
-    }
-}
-
-
-//********************************************************
-// Function: Initialize WiFi, blocking operation
-// Arguments: None
-// Return Value: None
-//
-// Ref: https://github.com/espressif/esp-idf/tree/master/examples/wifi/getting_started/station
-//
-// NOTE: We can use a helper function instep of this as referenced
-// https://github.com/espressif/esp-idf/tree/master/examples/protocols
-//********************************************************
-void wifi_init_sta(void)
-{
-   
-  s_wifi_event_group = xEventGroupCreate();
-
-  ESP_ERROR_CHECK(esp_netif_init());
-
-  ESP_ERROR_CHECK(esp_event_loop_create_default());
-  esp_netif_create_default_wifi_sta();
-
-  wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-  ESP_ERROR_CHECK(esp_wifi_init(&cfg));
-
-  esp_event_handler_instance_t instance_any_id;
-  esp_event_handler_instance_t instance_got_ip;
- 
-  ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
-                                                        ESP_EVENT_ANY_ID,
-                                                        &wifi_event_handler,
-                                                        NULL,
-                                                        &instance_any_id));
- 
-  ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT,
-                                                        IP_EVENT_STA_GOT_IP,
-                                                        &wifi_event_handler,
-                                                        NULL,
-                                                        &instance_got_ip));
-    wifi_sta_config_t msta;
-    memcpy(msta.ssid, EXAMPLE_ESP_WIFI_SSID, 32);
-    memcpy(msta.password, EXAMPLE_ESP_WIFI_PASS, 64);
-    // Worst case is I remove the following two
-    msta.threshold.authmode = ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD;
-    msta.sae_pwe_h2e = ESP_WIFI_SAE_MODE;
-   
-    wifi_config_t wifi_config;
-    wifi_config.sta = msta;
-   
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
-    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config) );
-    ESP_ERROR_CHECK(esp_wifi_start() );
-
-    ESP_LOGI(TAG, "wifi_init_sta finished.");
-
-    /* Waiting until either the connection is established (WIFI_CONNECTED_BIT) or connection failed for the maximum
-     * number of re-tries (WIFI_FAIL_BIT). The bits are set by event_handler() (see above) */
-    EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group,
-            WIFI_CONNECTED_BIT | WIFI_FAIL_BIT,
-            pdFALSE,
-            pdFALSE,
-            portMAX_DELAY);
-
-    /* xEventGroupWaitBits() returns the bits before the call returned, hence we can test which event actually
-     * happened. */
-    if (bits & WIFI_CONNECTED_BIT) {
-        ESP_LOGI(TAG, "connected to ap SSID:%s password:%s",
-                 EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
-    } else if (bits & WIFI_FAIL_BIT) {
-        ESP_LOGI(TAG, "Failed to connect to SSID:%s, password:%s",
-                 EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
-    } else {
-        ESP_LOGE(TAG, "UNEXPECTED EVENT");
-    }
-}
-
 
 //********************************************************
 // Function: Utilize ESP32 AHT Library to load values into
