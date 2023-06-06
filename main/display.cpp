@@ -106,19 +106,19 @@ void setup(void) {
 
     // Print the logo
     logo(ST77XX_GREEN);
-    vTaskDelay(pdMS_TO_TICKS(1500));
+    vTaskDelay(pdMS_TO_TICKS(2000));
 
     // Blink LED 4 times... Why?
     for(; i < 4; i++){
         gpio_set_level(LED, HIGH);
-        vTaskDelay(100);
+        vTaskDelay(pdMS_TO_TICKS(250));
         gpio_set_level(LED, LOW);
-        vTaskDelay(100);
+        vTaskDelay(pdMS_TO_TICKS(250));
     }
 
     // Print welcome message
     welcome();
-    vTaskDelay(pdMS_TO_TICKS(1000));
+    vTaskDelay(pdMS_TO_TICKS(2000));
    
     // Print HUD
     HUD();
@@ -229,7 +229,7 @@ void loop() {
             tft.setTextColor(ST77XX_YELLOW);
             tft.setTextSize(1);
             tft.println(99-j);
-            vTaskDelay(pdMS_TO_TICKS(100));
+            vTaskDelay(pdMS_TO_TICKS(200));
         }
         ESP_ERROR_CHECK(gpio_set_level(LED, HIGH));
     }
@@ -399,7 +399,8 @@ int aht_read(float* temperature, float* humidity) {
   // Also Print values here.
   esp_err_t res = aht_get_data(&aht_dev, temperature, humidity);
   if (res != ESP_OK) {
-     ESP_LOGE(TAG, "Error reading data: %d (%s)", res, esp_err_to_name(res));     vTaskDelay(pdMS_TO_TICKS(500));
+     ESP_LOGE(TAG, "Error reading data: %d (%s)", res, esp_err_to_name(res));     
+     vTaskDelay(pdMS_TO_TICKS(500));
      return 0;
   }
    
@@ -431,7 +432,7 @@ void init_ast_dev() {
     }
 
     // clear screen
-    vTaskDelay(pdMS_TO_TICKS(100));
+    vTaskDelay(pdMS_TO_TICKS(200));
     tft.fillScreen(ST77XX_BLACK);
     tft.invertDisplay(true);
     tft.setTextColor(ST77XX_GREEN);
