@@ -149,14 +149,11 @@ void loop() {
     int textH = 12;
 
     // Print Labels
-    for (int i = 0; i < 1; ++i) {
-        tft.setCursor(startX, startY) + (textH * i);
+    for (int i = 0; i <= 1; ++i) {
+        tft.setCursor(startX, startY + (textH * i));
         tft.setTextColor(ST77XX_GREEN);
         tft.setTextSize(1);
         tft.println("Temperature: ");
-        tft.setCursor(90, startY + (textH * i));
-        tft.setTextColor(ST77XX_GREEN);
-        tft.setTextSize(1);
     }
 
     while (1) {
@@ -175,6 +172,9 @@ void loop() {
 
 
         // Print Temp in C
+        tft.setCursor(90, startY);
+        tft.setTextColor(ST77XX_GREEN);
+        tft.setTextSize(1);
         tft.println(temp);
         Serial.println(temp);  
         tft.drawCircle(125,startY-1,2,ST77XX_GREEN);
@@ -184,7 +184,10 @@ void loop() {
         tft.setTextSize(1);
         tft.println("C");
        
-        // Print temp in F ... we need to convert!        
+        // Print temp in F ... we need to convert!
+        tft.setCursor(90, startY + textH);
+        tft.setTextColor(ST77XX_GREEN);
+        tft.setTextSize(1);        
         tft.println((temp * (9.0/5)) + 32.0);
 
         tft.drawCircle(125,startY+textH-1,2,ST77XX_GREEN);
@@ -393,7 +396,7 @@ void init_ast_dev() {
     tft.invertDisplay(true);
     tft.setTextColor(ST77XX_GREEN);
     tft.setCursor(20,25);
-    tft.print("connecting to sensor...");
+    tft.print("Connecting to sensor...");
    
     // Init AHT Print Status
     while (aht_init_desc(&aht_dev, 56, 0, SDA, SCL) != ESP_OK)
