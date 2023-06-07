@@ -399,7 +399,7 @@ void init_ast_dev() {
     tft.print("Connecting to sensor...");
    
     // Init AHT Print Status
-    while (aht_init_desc(&aht_dev, 56, 0, SDA, SCL) != ESP_OK)
+    while (aht_init_desc(&aht_dev, 56, (i2c_port_t)0, SDA, SCL) != ESP_OK)
     {
         tft.print("Sensor not found");
         ESP_LOGI(TAG, "AHT10 not connected or fail to load calibration coefficient"); //(F()) save string to flash & keeps dynamic memory free
