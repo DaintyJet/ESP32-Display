@@ -172,7 +172,7 @@ void loop() {
 
 
         // Print Temp in C
-        tft.setCursor(90, startY + (textH * i));
+        tft.setCursor(90, startY + textH);
         tft.setTextColor(ST77XX_GREEN);
         tft.setTextSize(1);
         tft.println(temp);
@@ -185,7 +185,7 @@ void loop() {
         tft.println("C");
        
         // Print temp in F ... we need to convert!
-        tft.setCursor(90, startY + (textH * i));
+        tft.setCursor(90, startY + textH);
         tft.setTextColor(ST77XX_GREEN);
         tft.setTextSize(1);        
         tft.println((temp * (9.0/5)) + 32.0);
