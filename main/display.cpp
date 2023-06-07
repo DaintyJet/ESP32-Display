@@ -172,7 +172,7 @@ void loop() {
 
 
         // Print Temp in C
-        tft.setCursor(90, startY + textH);
+        tft.setCursor(90, startY);
         tft.setTextColor(ST77XX_GREEN);
         tft.setTextSize(1);
         tft.println(temp);
