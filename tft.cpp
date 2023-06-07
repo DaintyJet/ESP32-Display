@@ -6,7 +6,6 @@
 #include <Adafruit_ST7789.h> // Hardware-specific library for ST7789
 #include <SPI.h>
 #include <Wire.h>
-#include "DHT.h"
 #include "WiFi.h"
 #include "time.h"
 //#include <AHT10.h> // there is no <AHT10.h> in official Library, replaced with <Adafruit_AHT10.h>
