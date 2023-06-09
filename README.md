@@ -48,10 +48,18 @@ We will need to use the ESP-IDF version 4.4 if we want to use it to build and fl
     ./install.sh  # Install esp-idf components 
     . ./export.sh # Export shell variables to the shell (Be sure to use the one in the esp-4.4/esp-idf)
    ```
-7. Run the idf.py build command in the ESP-Display project folder
+7. Configure mbedTLS
+    ```sh
+    #  Component config -> mbedTLS -> TLS Key Exchange Methods -> Enable pre shared-key ciphersuites
+    #  Component config -> mbedTLS -> TLS Key Exchange Methods -> Enable PSK based ciphersuite modes
+    idf.py menuconfig   
+    ```
+9. Run the idf.py build command in the ESP-Display project folder
    * This will install a number of components the first time you start a project 
    * If this fails for whatever reason (interrupted, exited, etc.) you can run the following command from the ```~/esp-4.4/esp-idf ``` directory
         ``` git submodule update --init --recursive ```
+
+**Note when moving between versions**: run ``` idf.py clean ``` and ``` idf.py fullclean ```
 
 ## Arduino as an ESP-IDF Component ESP version 5.1
 In this case we will do the same steps as listed above, only differing in some of the steps. (Because this is temporary, I will not list all of them)
@@ -61,15 +69,17 @@ In this case we will do the same steps as listed above, only differing in some o
 **We likely need to change the version used by the esp-idf VScode extension. This is due to the interconnected nature of the esp-arduino core, and the instability of changes I (Matt) would make.** 
 **4.4 is more reliable and stable as compaired to the pre-release 5.1. I will need to check if the other labs work on the 4.4 release - if so we should switch. When switching make sure to remove the old sdk (possibly)**
 
-1. Repeat, or enter into esp-idf folder
+1. Enter into the esp-idf directory
 2. Switch the esp-idf repository to release version 5.1 
     ```sh 
     git switch release/v5.1
     ```
 3. Enter into the ESP-Display directory 
-4. Switch the branch used by the arduino repository
     ```sh
     cd components/arduino 
+    ```
+4. Switch the branch used by the arduino repository
+    ```sh
     git switch esp-idf-v5.1-libs
     ```
 5. Modify the ``` Esp.h ``` File
@@ -79,15 +89,23 @@ In this case we will do the same steps as listed above, only differing in some o
 
     nano /home/iot/ESP32-Display/components/arduino/cores/esp32/Esp.h
     ```
-6. Make sure backwards compatability within FREERTOS in enabled
+6. Enabled backwards compatibility within FREERTOS
     ```sh
-    idf.py menuconfig 
     # compoent config -> FreeRtos -> Kernel -> configENABLE_BACKWARDS_COMPATIBILITY 
+    idf.py menuconfig 
     ```
-7. Add necessary dependency
+7. Enable Enable pre-shaired-cipher suites 
+    ```sh
+    #  Component config -> mbedTLS -> TLS Key Exchange Methods -> Enable pre shared-key ciphersuites
+    #  Component config -> mbedTLS -> TLS Key Exchange Methods -> Enable PSK based ciphersuite modes
+    idf.py menuconfig   
+    ```
+8. Add necessary component dependency
     ```sh
     idf.py add-dependency "espressif/mdns^1.1.0"
     ```
+**Note**: It did not require the pressing of the boot button when flashing
+s
 ## Components 
 Components used:
 
