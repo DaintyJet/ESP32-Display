@@ -2,7 +2,7 @@
 
 In this exercise students will use the LCD display of the SaTC ESP32 kit to display information regarding the current temperature and humidity readings. This is based off of an Arduino project XXX.
 
-Something to note is that the ESP-IDF arduino library, at the time of writing (6/1/23) only works with versions of ESP-IDF between *4.1* and *4.9*. Additionally, the workarounds to this problem are currently unstable.
+Something to note is that the ESP-IDF arduino library, at the time of writing (6/1/23) only works with versions of ESP-IDF between *4.4* and *4.4.99*. There is a branch for the pre-release version of esp-idf version 5.1, which may be unstable.
 
 ## Anatomy of an Aduino Project
 
@@ -18,7 +18,7 @@ An Arduino project consists of at least two functions. The **setup** and **loop*
     ```
 
 
-## Arduino as an ESP-IDF Component
+## Arduino as an ESP-IDF Component ESP version 4.4
 We will need to use the ESP-IDF version 4.4 if we want to use it to build and flash this project. The following are all necessary steps to add the Arduino core as a ESP-IDF component. **Note** that steps 1, 2, and 3 may have already been done for you.
 
 1. Install the [arduino-esp library](https://github.com/espressif/arduino-esp32) into a folder named arduino
@@ -48,17 +48,69 @@ We will need to use the ESP-IDF version 4.4 if we want to use it to build and fl
     ./install.sh  # Install esp-idf components 
     . ./export.sh # Export shell variables to the shell (Be sure to use the one in the esp-4.4/esp-idf)
    ```
-7. Run the idf.py build command in the ESP-Display project folder
+7. Configure mbedTLS
+    ```sh
+    #  Component config -> mbedTLS -> TLS Key Exchange Methods -> Enable pre shared-key ciphersuites
+    #  Component config -> mbedTLS -> TLS Key Exchange Methods -> Enable PSK based ciphersuite modes
+    idf.py menuconfig   
+    ```
+9. Run the idf.py build command in the ESP-Display project folder
    * This will install a number of components the first time you start a project 
    * If this fails for whatever reason (interrupted, exited, etc.) you can run the following command from the ```~/esp-4.4/esp-idf ``` directory
         ``` git submodule update --init --recursive ```
 
+**Note when moving between versions**: run ``` idf.py clean ``` and ``` idf.py fullclean ```
 
+## Arduino as an ESP-IDF Component ESP version 5.1
+In this case we will do the same steps as listed above, only differing in some of the steps. (Because this is temporary, I will not list all of them)
+
+(Note the initial time I did this it failed, after installing 4.4 and going back to this it did work - may not work without some tools in the chain from 4.4)
+
+**We likely need to change the version used by the esp-idf VScode extension. This is due to the interconnected nature of the esp-arduino core, and the instability of changes I (Matt) would make.** 
+**4.4 is more reliable and stable as compaired to the pre-release 5.1. I will need to check if the other labs work on the 4.4 release - if so we should switch. When switching make sure to remove the old sdk (possibly)**
+
+1. Enter into the esp-idf directory
+2. Switch the esp-idf repository to release version 5.1 
+    ```sh 
+    git switch release/v5.1
+    ```
+3. Enter into the ESP-Display directory 
+    ```sh
+    cd components/arduino 
+    ```
+4. Switch the branch used by the arduino repository
+    ```sh
+    git switch esp-idf-v5.1-libs
+    ```
+5. Modify the ``` Esp.h ``` File
+    ```sh
+    # Replace #include <esp_partition.h>
+    # With #include</home/iot/esp/esp-idf/components/esp_partition/include/esp_partition.h>
+
+    nano /home/iot/ESP32-Display/components/arduino/cores/esp32/Esp.h
+    ```
+6. Enabled backwards compatibility within FREERTOS
+    ```sh
+    # compoent config -> FreeRtos -> Kernel -> configENABLE_BACKWARDS_COMPATIBILITY 
+    idf.py menuconfig 
+    ```
+7. Enable Enable pre-shaired-cipher suites 
+    ```sh
+    #  Component config -> mbedTLS -> TLS Key Exchange Methods -> Enable pre shared-key ciphersuites
+    #  Component config -> mbedTLS -> TLS Key Exchange Methods -> Enable PSK based ciphersuite modes
+    idf.py menuconfig   
+    ```
+8. Add necessary component dependency
+    ```sh
+    idf.py add-dependency "espressif/mdns^1.1.0"
+    ```
+**Note**: It did not require the pressing of the boot button when flashing
+s
 ## Components 
 Components used:
 
 * Display: https://github.com/adafruit/Adafruit-ST7735-Library
-   * We need to add a CMakeList.txt file in the display library so it will be discovered, and linked. This has already been done in this project (Hence why the library is not a submodule!) 
+   * We need to add a CMakeList.txt file in the display library so it will be discovered, and linked. This has already been done in this project (Hence why the library is a fork and submodule!) 
         ```
         cmake_minimum_required(VERSION 3.16)
 
