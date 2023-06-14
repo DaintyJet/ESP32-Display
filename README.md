@@ -39,7 +39,7 @@ We will need to use the ESP-IDF version 4.4 or 5.1 if we want to use the ESP-IDF
     ```
 
 ### Arduino component setup
-The following instructions should be done within the *project repository* ``` ESP-DISPLAY ```. Additionally if you downloaded this repository correctly **steps 1, 2, and 3 will already have been done for you**.
+The following instructions should be done within the *project repository* ``` ESP-DISPLAY ```. Additionally if you downloaded this repository correctly **steps 1, 2, and 3 will already have been done for you**. When using the *provided VM* this is already done for you.
 
 1. Now **Install** the [arduino-esp library](https://github.com/espressif/arduino-esp32) into a folder named arduino
     ```sh
