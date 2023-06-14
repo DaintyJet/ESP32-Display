@@ -1,12 +1,12 @@
 # ESP32 Display Lab/Demo
 
-In this exercise students will use the LCD display of the SaTC ESP32 kit to display information regarding the current temperature and humidity readings. This is based off of an Arduino project XXX.
+In this exercise students will use the LCD display of the SaTC ESP32 kit to display information regarding the current temperature and humidity readings. This is a Arduino project with the ESP-IDF toolchain using the [ESP-Arduino Core](www.google.com) as a component.
 
-Something to note is that the ESP-IDF arduino library, at the time of writing (6/1/23) only works with versions of ESP-IDF between *4.4* and *4.4.99*. There is a branch for the pre-release version of esp-idf version 5.1, which may be unstable.
+Something to note is that the ESP-IDF arduino library, at the time of writing (6/1/23) only works with versions of ESP-IDF between *4.4* and *4.4.99* or 5.1. The branch for version 5.1 refers to the the pre-release version of esp-idf version 5.1, which may be unstable.
 
 ## Anatomy of an Aduino Project
 
-An Arduino project consists of at least two functions. The **setup** and **loop** functions. The entrypoint of the program is the **setup** functions, this is often used to configure the device and any attached components. Once the **setup** function has returned, the **loop** function will run, and will continue to be called each time it completes. This architecture is called the **super-loop**, and does not take advantage of the Real Time Operating System (RTOS) capabilities of the ESP32.
+An Arduino project consists of at least two functions. The **setup** and *loop* functions. The entrypoint of the program is the *setup* functions, this is often used to configure the device and any attached components. Once the *setup* function has ended and returned, the *loop* function will begin to run, and will continue to be called each time it completes a run. This is called a *super-loop* architecture , and does not take advantage of the Real Time Operating System (RTOS) capabilities of the ESP32.
 
 ## Start this project
 1. Download the git repository and it's submodules.
@@ -19,7 +19,7 @@ An Arduino project consists of at least two functions. The **setup** and **loop*
 
 
 ## Arduino as an ESP-IDF Component ESP version 4.4
-We will need to use the ESP-IDF version 4.4 if we want to use it to build and flash this project. The following are all necessary steps to add the Arduino core as a ESP-IDF component. **Note** that steps 1, 2, and 3 may have already been done for you.
+We will need to use the ESP-IDF version 4.4 or 5.1 if we want to use the ESP-IDF to build and flash this project. The following are all necessary steps to add the Arduino core as a ESP-IDF component. **Note** that steps 1, 2, and 3 may have already been done for you.
 
 1. Install the [arduino-esp library](https://github.com/espressif/arduino-esp32) into a folder named arduino
     ```sh
