@@ -41,6 +41,15 @@ We will need to use the ESP-IDF version 4.4 or 5.1 if we want to use the ESP-IDF
 ### Arduino component setup
 The following instructions should be done within the *project repository* ``` ESP-DISPLAY ```. Additionally if you downloaded this repository correctly **steps 1, 2, and 3 will already have been done for you**. When using the *provided VM* this is already done for you.
 
+**Notice**: When running a project with the arduino core for the first time the ``` idf.py ``` commands will *fail*. We need to edit the generated SDKCONFIG to increase the ``` CONFIG_FREERTOS_HZ ``` value.
+``` 
+# Before 
+CONFIG_FREERTOS_HZ=100
+
+# After 
+CONFIG_FREERTOS_HZ=1000
+```
+
 1. Now **Install** the [arduino-esp library](https://github.com/espressif/arduino-esp32) into a folder named arduino
     ```sh
     cd components && \                                            # Enter into components folder                                           
