@@ -97,8 +97,8 @@ CONFIG_FREERTOS_HZ=1000
 
 **Note**: We can combine all three commands with one button (build flash monitor) or use the terminal ``` idf.py build flash monitor ```
 
-## Components 
-Components used:
+## Components used
+The following are the components used in this ESP-IDF project 
 
 * Display: https://github.com/adafruit/Adafruit-ST7735-Library
    * We need to add a CMakeList.txt file in the display library so it will be discovered, and linked. This has already been done in this project (Hence why the library is a fork and submodule!) 
@@ -116,3 +116,5 @@ Components used:
 * Core Graphics Library: https://github.com/adafruit/Adafruit-GFX-Library
 
 * BusIO Library: https://github.com/adafruit/Adafruit_BusIO
+
+* ESP32 Arduino Core: https://github.com/espressif/arduino-esp32   
