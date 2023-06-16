@@ -16,7 +16,7 @@ An Arduino project consists of at least two functions. The **setup** and *loop* 
     git submodule init && \                  # Init submodules
     git submodule update                     # Install submodules
     ```
-
+    **Note**: By default, this project is already located in the ``` ~/esp/IoT-Examples/ ``` directory of the Ubuntu VM.
 ## Arduino as an ESP-IDF Component ESP version 5.1
 We will need to use the ESP-IDF version 4.4 or 5.1 if we want to use the ESP-IDF to build and flash this project. The following are all necessary steps to add the Arduino core as a ESP-IDF component. **Note** that this will have already been done for you when using the provided VM.
 
