@@ -379,18 +379,19 @@ int aht_read(float* temperature, float* humidity) {
      return 0;
   }
    
-  ESP_LOGI(TAG, "Temperature: %.1f°C, Humidity: %.2f%%", *temperature, *humidity);
+  ESP_LOGI(TAG, "\nTemperature: %.1f°C, Humidity: %.2f%%\nTemperature: %.1f°F, Humidity: %.2f%%", *temperature, *humidity, ((*temperature) * (9.0/5.0) + 32.0), *humidity);
+
   return 1;  
 }
 
 //**************************************
-// Function: Given an AHT device initalize it, check it's calibration and
+// Function: Given an AHT device initialize it, check it's calibration and
 // Print to the LCD display
 // Arguments: dev => aht object
 // Return value: none
 //**************************************
 void init_ast_dev() {
-    // Setup Disaply printout
+    // Setup Display printout
     tft.setRotation(3);  
     tft.fillScreen(ST77XX_BLACK);
     tft.invertDisplay(true);
