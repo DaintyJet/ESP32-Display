@@ -135,7 +135,7 @@ void setup(void) {
     }
    
     // Connect to Wifi and print bars
-    WiFi.begin("HOME-9E24_Ext", "triumph98");
+    WiFi.begin(EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
 vTaskDelay(500);
     vTaskDelay(pdMS_TO_TICKS(500));
     tft.fillRect(screenWidth/2-20, HUD_height - 10, 70,10, ST77XX_BLACK);
