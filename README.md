@@ -6,10 +6,10 @@ Something to note is that the ESP-IDF arduino library, at the time of writing (6
 
 ## Anatomy of an Aduino Project
 
-An Arduino project consists of at least two functions. The **setup** and *loop* functions. The entrypoint of the program is the *setup* functions, this is often used to configure the device and any attached components. Once the *setup* function has ended and returned, the *loop* function will begin to run, and will continue to be called each time it completes a run. This is called a *super-loop* architecture , and does not take advantage of the Real Time Operating System (RTOS) capabilities of the ESP32.
+An Arduino project consists of at least two functions. The *setup* and *loop* functions. The entrypoint of the program is the *setup* function, this is often used to configure the device and any attached components. Once the *setup* function has ended and returned, the *loop* function will begin to run, and will continue to be called each time it completes a pass. This is called a *super-loop* architecture, and does not take advantage of the Real Time Operating System (RTOS) capabilities of the ESP32.
 
 ## Starting this project
-1. Download the git repository and it's submodules.
+1. Download the git repository and it's submodules. The use of && \ allows this to be ran as one large command.
     ```sh
     git clone <INSERT FINAL LINK HERE> && \  # Clone the repository 
     cd ESP-Display && \                      # Enter into repository folder
@@ -20,28 +20,28 @@ An Arduino project consists of at least two functions. The **setup** and *loop* 
 ## Arduino as an ESP-IDF Component ESP version 5.1
 We will need to use the ESP-IDF version 4.4 or 5.1 if we want to use the ESP-IDF to build and flash this project. The following are all necessary steps to add the Arduino core as a ESP-IDF component. **Note** that this will have already been done for you when using the provided VM.
 
-(Note the initial time I did this it failed, after installing 4.4 and going back to this it did work - may not work without some tools in the chain from 4.4)
 ### ESP-IDF Setup
-1. Enter into the esp-idf directory or install [esp-idf](https://github.com/espressif/esp-idf)
+**NOTICE**: This has already been done if you are using the provided Virtual Machine
+1. Enter into the esp-idf directory or install [esp-idf](https://github.com/espressif/esp-idf) as shown below.
     ```sh
     # Installing ESP-IDF
     cd ~ && \                                           # Enter into the home directory 
     cd esp && \                                         # Enter into the newly create folder
     git clone https://github.com/espressif/esp-idf.git  # Clone esp-idf
     ```
-2. Switch the esp-idf repository to release version 5.1 
+2. Switch the esp-idf repository to release version 5.1
     ```sh 
     git switch release/v5.1
     ```
-3. Run the install script located in the newly cloned ``` esp-idf ``` repository
+3. Run the install script located in the newly cloned ``` esp-idf ``` repository.
     ```sh 
     ./install.sh
     ```
 
 ### Arduino component setup
-The following instructions should be done within the *project repository* ``` ESP-DISPLAY ```. Additionally if you downloaded this repository correctly **steps 1, 2, and 3 will already have been done for you**. When using the *provided VM* all of this has already been done for you.
+The following instructions should be done within the *project repository* ``` ESP-DISPLAY ```. Additionally if you downloaded this repository correctly **steps 2 through 7 will already have been done for you**. When using the *provided VM* all of this has already been done for you.
 
-**Notice**: When running a project with the arduino core for the first time the ``` idf.py ``` commands will *fail*. We need to edit the generated SDKCONFIG to increase the ``` CONFIG_FREERTOS_HZ ``` value.
+**Notice**: When running a project with the arduino core for the first time the ``` idf.py ``` commands will *fail*. We need to edit the generated SDKCONFIG to increase the ``` CONFIG_FREERTOS_HZ ``` value. Use your preferred editor.
 ``` 
 # Before 
 CONFIG_FREERTOS_HZ=100
@@ -50,20 +50,36 @@ CONFIG_FREERTOS_HZ=100
 CONFIG_FREERTOS_HZ=1000
 ```
 
-1. Now **Install** the [arduino-esp library](https://github.com/espressif/arduino-esp32) into a folder named arduino
+1. Enter into the project directory if you are not already there
+2. Now **Install** the [arduino-esp library](https://github.com/espressif/arduino-esp32) into a folder named arduino
     ```sh
-    cd components && \                                            # Enter into components folder                                           
-    git clone https://github.com/espressif/arduino-esp32 arduino  # Clone arduino core
+    # Clone into arduino-esp32 repository into a directory ./components/arduino
+    git clone https://github.com/espressif/arduino-esp32 components/arduino  # Clone arduino core
     ```
-2. Enter into the component arduino library
+3. **Install** the [Adafruit-ST7735 Display Library](https://github.com/adafruit/Adafruit-ST7735-Library)
+    ```sh
+    # Clone into Adafruit-ST7735-Library repository into a directory ./components/Adafruit-ST7735-Library
+    git clone https://github.com/DaintyJet/Adafruit-ST7735-Library components/Adafruit-ST7735-Library
+    ```
+4. **Install** the [Arduino Core Graphics Library](https://github.com/adafruit/Adafruit-GFX-Library)
+    ```sh
+    # Clone into Adafruit-GFX-Library repository into a directory ./components/Adafruit-GFX-Library
+    git clone https://github.com/adafruit/Adafruit-GFX-Library components/Adafruit-GFX-Library
+    ```
+5. **Install** the [Arduino BusIO Library](https://github.com/adafruit/Adafruit_BusIO)
+    ``` 
+    # Clone into Adafruit_BusIO repository into a directory ./components/Adafruit_BusIO
+    git clone https://github.com/adafruit/Adafruit_BusIO components/Adafruit_BusIO
+    ```
+6. Enter into the component arduino library
     ```sh
     cd components/arduino 
     ```
-3. Switch the branch used by the arduino repository
+7. Switch the branch used by the arduino repository
     ```sh
     git switch esp-idf-v5.1-libs
     ```
-4. Modify the ``` components/arduino/CMakeList.txt ``` so the esp_partition can be located.
+8. Modify the ``` components/arduino/CMakeList.txt ``` so the esp_partition can be located.
     ```
     # Before
     set(requires spi_flash mbedtls mdns wifi_provisioning wpa_supplicant esp_adc esp_eth http_parse)
@@ -71,18 +87,22 @@ CONFIG_FREERTOS_HZ=1000
     # After
     set(requires spi_flash mbedtls mdns wifi_provisioning wpa_supplicant esp_adc esp_eth http_parser esp_partition)
     ``` 
-5. Enabled backwards compatibility within FREERTOS
+9.  Move back to the ESP32-Display project directory, otherwise the menuconfig will not work.
+    ```sh
+    cd ../..
+    ```
+10. Enabled backwards compatibility within FREERTOS
     ```sh
     # compoent config -> FreeRtos -> Kernel -> configENABLE_BACKWARDS_COMPATIBILITY 
     idf.py menuconfig 
     ```
-6.  Enable Enable pre-shaired-cipher suites 
+11. Enable Enable pre-shaired-cipher suites 
     ```sh
     #  Component config -> mbedTLS -> TLS Key Exchange Methods -> Enable pre shared-key ciphersuites
     #  Component config -> mbedTLS -> TLS Key Exchange Methods -> Enable PSK based ciphersuite modes
     idf.py menuconfig   
     ```
-7. Add necessary component dependency
+12. Add necessary component dependency
     ```sh
     idf.py add-dependency "espressif/mdns^1.1.0"
     ```
