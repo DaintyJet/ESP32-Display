@@ -87,7 +87,7 @@ CONFIG_FREERTOS_HZ=1000
     # After
     set(requires spi_flash mbedtls mdns wifi_provisioning wpa_supplicant esp_adc esp_eth http_parser esp_partition)
     ``` 
-9.  Move back to the ESP32-Display project directory, otherwise the menuconfig will not work.
+9.  Move back to the *ESP32-Display* project directory, otherwise the menuconfig will not work.
     ```sh
     cd ../..
     ```
