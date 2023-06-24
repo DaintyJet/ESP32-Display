@@ -8,6 +8,8 @@ Something to note is that the ESP-IDF arduino library, at the time of writing (6
 
 We will use Arduino [setup() and loop()](https://espressif-docs.readthedocs-hosted.com/projects/arduino-esp32/en/latest/esp-idf_component.html) in this project. The entrypoint of the program is the *setup* function, and this is often used to configure the device and any attached components. Once the *setup* function has ended and returned, the *loop* function will begin to run, and will continue to be called each time it completes a pass. This is called a *super-loop* architecture, and does not take advantage of the Real Time Operating System (RTOS) capabilities of the ESP32.
 
+By default, the VM has this project and is configured with the Arduino component so that optional steps below are not needed. 
+
 ## Starting this project (Optional)
 1. Download the git repository and it's submodules if not. The use of && \ allows this to be ran as one large command.
     ```sh
@@ -111,6 +113,7 @@ CONFIG_FREERTOS_HZ=1000
 **Note when moving between versions**: run ``` idf.py clean ``` and ``` idf.py fullclean ```
 
 ## Project Flashing
+
 1. Build the project using the build button located at the bottom of VS Code, or run the command ``` idf.py build ``` in an esp-idf terminal. 
 2. Flash the project using the flash button located at the bottom of VS Code, or run the command ``` idf.py flash ``` in an esp-idf terminal. 
 3. Start a Serial Monitor using the button located at the bottom of VS Code, or run the command ``` idf.py monitor ``` in an esp-idf terminal. 
