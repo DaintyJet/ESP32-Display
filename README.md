@@ -1,4 +1,4 @@
-# ESP32 Display Lab/Demo
+# ESP32 Display Lab
 
 In this exercise students will use the LCD display of the SaTC ESP32 kit to display information regarding the current temperature and humidity readings. This is an ESP-IDF project using the [ESP-Arduino Core](https://github.com/espressif/arduino-esp32) as a component.
 
