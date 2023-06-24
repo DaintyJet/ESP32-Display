@@ -6,10 +6,10 @@ Something to note is that the ESP-IDF arduino library, at the time of writing (6
 
 ## Anatomy of an ESP-IDF Arduino Project
 
-An [ESPO-IDF Arduino project](https://espressif-docs.readthedocs-hosted.com/projects/arduino-esp32/en/latest/esp-idf_component.html) consists of at least two functions. The *setup* and *loop* functions. The entrypoint of the program is the *setup* function, this is often used to configure the device and any attached components. Once the *setup* function has ended and returned, the *loop* function will begin to run, and will continue to be called each time it completes a pass. This is called a *super-loop* architecture, and does not take advantage of the Real Time Operating System (RTOS) capabilities of the ESP32.
+We will use Arduino [setup() and loop()](https://espressif-docs.readthedocs-hosted.com/projects/arduino-esp32/en/latest/esp-idf_component.html) in this project. The entrypoint of the program is the *setup* function, and this is often used to configure the device and any attached components. Once the *setup* function has ended and returned, the *loop* function will begin to run, and will continue to be called each time it completes a pass. This is called a *super-loop* architecture, and does not take advantage of the Real Time Operating System (RTOS) capabilities of the ESP32.
 
-## Starting this project
-1. Download the git repository and it's submodules. The use of && \ allows this to be ran as one large command.
+## Starting this project (Optional)
+1. Download the git repository and it's submodules if not. The use of && \ allows this to be ran as one large command.
     ```sh
     git clone <INSERT FINAL LINK HERE> && \  # Clone the repository 
     cd ESP-Display && \                      # Enter into repository folder
@@ -17,10 +17,11 @@ An [ESPO-IDF Arduino project](https://espressif-docs.readthedocs-hosted.com/proj
     git submodule update                     # Install submodules
     ```
     **Note**: By default, this project is already located in the ``` ~/esp/IoT-Examples/ ``` directory of the Ubuntu VM.
-## Arduino as an ESP-IDF Component ESP version 5.1
+
+## Arduino as an ESP-IDF Component ESP version 5.1 (Optional)
 We will need to use the ESP-IDF version 4.4 or 5.1 if we want to use the ESP-IDF to build and flash this project. The following are all necessary steps to add the Arduino core as a ESP-IDF component. **Note** that this will have already been done for you when using the provided VM.
 
-### ESP-IDF Setup
+### ESP-IDF Setup (Optional)
 **NOTICE**: This has already been done if you are using the provided Virtual Machine
 1. Enter into the esp-idf directory or install [esp-idf](https://github.com/espressif/esp-idf) as shown below.
     ```sh
@@ -38,7 +39,7 @@ We will need to use the ESP-IDF version 4.4 or 5.1 if we want to use the ESP-IDF
     ./install.sh
     ```
 
-### Arduino component setup
+### Arduino component setup (Optional)
 The following instructions should be done within the *project repository* ``` ESP-DISPLAY ```. Additionally if you downloaded this repository correctly **steps 2 through 7 will already have been done for you**. When using the *provided VM* all of this has already been done for you.
 
 **Notice**: When running a project with the arduino core for the first time the ``` idf.py ``` commands will *fail*. We need to edit the generated SDKCONFIG to increase the ``` CONFIG_FREERTOS_HZ ``` value. Use your preferred editor.
@@ -117,7 +118,7 @@ CONFIG_FREERTOS_HZ=1000
 
 **Note**: We can combine all three commands with one button (build flash monitor) or use the terminal ``` idf.py build flash monitor ```
 
-## Components used
+## Components used (Optional)
 The following are the components used in this ESP-IDF project 
 
 * Display: https://github.com/adafruit/Adafruit-ST7735-Library
