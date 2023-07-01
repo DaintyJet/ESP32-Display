@@ -2,13 +2,13 @@
 
 In this exercise students will use the LCD display of the SaTC ESP32 kit to display information regarding the current temperature and humidity readings. This is an ESP-IDF project using the [ESP-Arduino Core](https://github.com/espressif/arduino-esp32) as a component.
 
-Something to note is that the ESP-IDF arduino library, at the time of writing (6/1/23) only works with versions of ESP-IDF between *4.4* and *4.4.99* or 5.1. The branch for version 5.1 refers to the the pre-release version of esp-idf version 5.1, which may be unstable.
+Something to note is that the ESP-IDF arduino library, at the time of writing (6/1/23) only works with versions of ESP-IDF between *4.4* and *4.4.99* or 5.1. The branch for version 5.1 refers to the pre-release version of esp-idf version 5.1, which may be unstable.
 
 ## Anatomy of an ESP-IDF Arduino Project
 
 We will use Arduino [setup() and loop()](https://espressif-docs.readthedocs-hosted.com/projects/arduino-esp32/en/latest/esp-idf_component.html) in this project. The entrypoint of the program is the *setup* function, and this is often used to configure the device and any attached components. Once the *setup* function has ended and returned, the *loop* function will begin to run, and will continue to be called each time it completes a pass. This is called a *super-loop* architecture, and does not take advantage of the Real Time Operating System (RTOS) capabilities of the ESP32.
 
-By default, the VM has this project and is configured with the Arduino component so that optional steps below are not needed. 
+By default, the VM has this project and is configured with the Arduino component so the optional steps below are not needed. 
 
 ## Starting this project (Optional)
 1. Download the git repository and it's submodules if not. The use of && \ allows this to be ran as one large command.
@@ -42,9 +42,9 @@ We will need to use the ESP-IDF version 4.4 or 5.1 if we want to use the ESP-IDF
     ```
 
 ### Arduino component setup (Optional)
-The following instructions should be done within the *project repository* ``` ESP-DISPLAY ```. Additionally if you downloaded this repository correctly **steps 2 through 7 will already have been done for you**. When using the *provided VM* all of this has already been done for you.
+The following instructions should be done within the *project repository* ``` ESP-DISPLAY ```. Additionally, if you downloaded this repository correctly **steps 2 through 7 will already have been done for you**. When using the *provided VM* all of this has already been done for you.
 
-**Notice**: When running a project with the arduino core for the first time the ``` idf.py ``` commands will *fail*. We need to edit the generated SDKCONFIG to increase the ``` CONFIG_FREERTOS_HZ ``` value. Use your preferred editor.
+**Notice**: When running a project with the Arduino core for the first time the ``` idf.py ``` commands will *fail*. We need to edit the generated SDKCONFIG to increase the ``` CONFIG_FREERTOS_HZ ``` value. Use your preferred editor.
 ``` 
 # Before 
 CONFIG_FREERTOS_HZ=100
@@ -122,7 +122,7 @@ CONFIG_FREERTOS_HZ=1000
 **Note**: We can combine all three commands with one button (build flash monitor) or use the terminal ``` idf.py build flash monitor ```
 <!-- Removed Optional, as this is a set of notes on the components in the Repository -->
 ## Components used 
-The following are the components used in this ESP-IDF project. They are already included in the *components* folder.
+The following are the components used in this ESP-IDF project. They are already included in the *components* folder. Additionally, their setup is described in the section [Arduino component setup](#arduino-component-setup) so no further action is needed.
 
 * Display: https://github.com/adafruit/Adafruit-ST7735-Library
    * We need to add a CMakeList.txt file in the display library so it will be discovered, and linked. This has already been done in this project (Hence why the library is a fork and submodule!) 
